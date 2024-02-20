@@ -1,11 +1,17 @@
 use std::io::{self, stdout};
 use tui_textarea::{TextArea, Input, Key};
 use crossterm::{
-    event::{self, Event, KeyCode},
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-    ExecutableCommand,
+    event::KeyCode, terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen}, ExecutableCommand
 };
 use ratatui::{prelude::*, widgets::*};
+use curl::easy::Easy;
+
+enum SelectedWindow {
+    EXPLORER,
+    URI,
+    SUBMIT,
+    RESPONSE
+}
 
 fn main() -> io::Result<()> {
     enable_raw_mode()?;
@@ -19,15 +25,17 @@ fn main() -> io::Result<()> {
             .borders(Borders::ALL)
             .title("URI"),
     );
-    let mut should_quit = false;
-    while !should_quit {
+    let mut selected_window: SelectedWindow = SelectedWindow::EXPLORER;
+    let mut data = Vec::new();
+
+    loop {
         terminal.draw(|frame| {
 
             let main_layout = Layout::new(
                 Direction::Horizontal,
                 [
-                    Constraint::Percentage(50),
-                    Constraint::Percentage(50),
+                    Constraint::Percentage(20),
+                    Constraint::Percentage(80),
                 ],
             ).split(frame.size());
 
@@ -35,12 +43,10 @@ fn main() -> io::Result<()> {
             let left_frame = Layout::new(
                 Direction::Vertical,
                 [
-                    Constraint::Percentage(3),
-                    Constraint::Percentage(97)
+                    Constraint::Percentage(5),
+                    Constraint::Percentage(95)
                 ],
             ).split(main_layout[1]);
-
-
 
             frame.render_widget(
                 Paragraph::new("explorer stuff")
@@ -69,19 +75,38 @@ fn main() -> io::Result<()> {
             );
 
             frame.render_widget(
-                Paragraph::new("")
+                Paragraph::new(String::from_utf8(data.clone()).unwrap())
                     .block(Block::default().title("Response").borders(Borders::ALL)),
                 left_frame[1],
             );
         })?;
-        should_quit = handle_events()?;
-
         match crossterm::event::read()?.into() {
             Input { key: Key::Esc, .. } => break,
+            Input { key: Key::Char('1'), .. } => {
+                selected_window = SelectedWindow::EXPLORER;
+            },
+            Input { key: Key::Char('3'), .. } => {
+                selected_window = SelectedWindow::URI;
+            },
+            Input { key: Key::Char('4'), .. } => {
+                selected_window = SelectedWindow::SUBMIT;
+            },
             input => {
-                textarea.input(input);
+                match selected_window {
+                    SelectedWindow::URI => textarea.input(input),
+                    SelectedWindow::SUBMIT => {
+                        match input {
+                            Input { key: Key::Enter, .. } => {
+                                curl(textarea.lines()[0].as_str(), &mut data);
+                                true
+                            },
+                            _ => true,
+                        }
+                    }
+                    _ => true,
+                };
             }
-        }
+        };
     }
 
     disable_raw_mode()?;
@@ -90,14 +115,17 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn handle_events() -> io::Result<bool> {
-    if event::poll(std::time::Duration::from_millis(50))? {
-        if let  Event::Key(key) = event::read()? {
-            if key.kind == event::KeyEventKind::Press && key.code == KeyCode::Char('q') {
-                return Ok(true)
-            }
-        }
-    }
+fn curl(url: &str, data: &mut Vec<u8>) {
+    println!("starting curl");
+    let mut easy = Easy::new();
+    easy.url(url).unwrap();
 
-    Ok(false)
+
+    let mut transfer = easy.transfer();
+    transfer.write_function(|d| {
+        data.extend_from_slice(d);
+        Ok(d.len())
+    }).unwrap();
+
+    transfer.perform().unwrap();
 }

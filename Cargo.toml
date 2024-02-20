@@ -1,5 +1,5 @@
 [package]
-name = "CurlTUI"
+name = "LazyCurl"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 crossterm = "0.27.0"
+curl = "0.4.46"
 ratatui = "0.26.1"
 tui-textarea = "0.4.0"
