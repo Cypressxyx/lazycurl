@@ -1,5 +1,5 @@
 [package]
-name = "LazyCurl"
+name = "lazy_curl"
 version = "0.1.0"
 edition = "2021"
 
