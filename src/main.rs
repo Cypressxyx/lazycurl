@@ -1,4 +1,4 @@
-use std::io::{self, stdout};
+use std::io::{self, stdout, Read};
 use tui_textarea::{TextArea, Input, Key};
 use crossterm::{
     event::KeyCode, terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen}, ExecutableCommand
@@ -160,13 +160,19 @@ fn main() -> io::Result<()> {
 }
 
 fn curl(url: &str, data: &mut Vec<u8>, headers: curl::easy::List) {
-    let mut post_data = "".as_bytes();
+    let mut post_data = "{}".as_bytes();
     let mut easy = Easy::new();
     easy.post(true).unwrap();
     easy.url(url).unwrap();
     easy.http_headers(headers).unwrap();
     easy.post_field_size(post_data.len() as u64).unwrap();
     let mut transfer = easy.transfer();
+
+    transfer.read_function(|buf| {
+        Ok(post_data.read(buf).unwrap_or(0))
+    }).unwrap();
+
+
     transfer.write_function(|d| {
         data.extend_from_slice(d);
         Ok(d.len())
