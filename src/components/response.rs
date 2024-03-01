@@ -19,7 +19,10 @@ impl Response {
     }
 
     pub fn update_response_value(&mut self, response: String) {
-        self.response_value = response;
+        let pretty_json = serde_json::to_string_pretty(&response.as_str())
+            .expect("Errro found");
+
+        self.response_value = pretty_json;
     }
 }
 
