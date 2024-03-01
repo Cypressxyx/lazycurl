@@ -1,7 +1,7 @@
-use std::io::{self, Read};
+use std::{io::{self, Read}, str::FromStr};
 use ratatui::{layout::{Constraint, Direction, Layout}, Frame};
 use tui_textarea::{Input, Key};
-use crate::{action::Action, components::{headers::Headers, response::Response, submit::Submit, url::Url, Component}, tui};
+use crate::{action::Action, components::{headers::Headers, response::Response, submit::Submit, url::Url, Component}, lazycurl_file::LazyCurlFile, tui};
 use curl::easy::Easy;
 
 pub enum SelectedComponent {
@@ -125,9 +125,17 @@ impl<'a> App<'a> {
         let mut headers = curl::easy::List::new();
         headers.append(self.header_component.get_key_value().as_str()).unwrap();
         self.response = Vec::new();
-        curl(self.url_component.get_url(), &mut self.response, headers);
-        self.response_component.update_response_value(String::from_utf8(self.response.clone()).unwrap())
+        let url = self.url_component.get_url();
+        curl(url, &mut self.response, headers);
+        let response_string = String::from_utf8(self.response.clone()).unwrap();
+        self.response_component.update_response_value(response_string.clone());
+        save_request(url, response_string.clone())
     }
+
+}
+
+fn save_request(url: &str, response: String) {
+    let _ = LazyCurlFile::new(String::from_str(url).unwrap()).save();
 }
 
 fn curl(url: &str, data: &mut Vec<u8>, headers: curl::easy::List) {
