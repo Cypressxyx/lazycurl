@@ -1,21 +1,37 @@
-use std::io::{self, stdout, Read};
-use tui_textarea::{TextArea, Input, Key};
-use crossterm::{
-    event::KeyCode, terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen}, ExecutableCommand
-};
-use ratatui::{prelude::*, widgets::*};
-use curl::easy::{self, Easy};
+//use std::io::{self, stdout, Read};
+use std::io;
+//use tui_textarea::{TextArea, Input, Key};
+/*use crossterm::{
+    event::KeyCode, terminal::{self, disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen}, ExecutableCommand
+}; */
+//use ratatui::{prelude::*, widgets::*};
+//use curl::easy::{self, Easy};
 
+pub mod app;
+pub mod tui;
+pub mod components;
+pub mod action;
+
+use crate::app::App;
+
+/*
 enum SelectedWindow {
-    EXPLORER,
-    URI,
+    EXPLORER = 0,
+    URI = 1,
     SUBMIT,
     HEADERS,
     HEADER_KEY,
     RESPONSE
-}
+}*/
 
 fn main() -> io::Result<()> {
+    let mut terminal = tui::init()?;
+    let app_result = App::new().run(&mut terminal);
+    tui::restore()?;
+    app_result
+}
+/*
+fn old() -> io::Result<()> {
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)  ?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
@@ -23,12 +39,11 @@ fn main() -> io::Result<()> {
     let mut textarea = TextArea::default();
     let mut textarea_header_key = TextArea::default();
     let mut textarea_header_cookies = TextArea::default();
-    
+
     textarea.set_block(
         Block::default()
             .borders(Borders::ALL)
-            .title("URI"),
-    );
+            .title("URI"));
 
     textarea_header_key.set_block(
         Block::default()
@@ -50,8 +65,7 @@ fn main() -> io::Result<()> {
             let main_layout = Layout::new(
                 Direction::Horizontal,
                 [
-                    Constraint::Percentage(20),
-                    Constraint::Percentage(80),
+                    Constraint::Percentage(100),
                 ],
             ).split(frame.size());
 
@@ -63,13 +77,7 @@ fn main() -> io::Result<()> {
                     Constraint::Percentage(10),
                     Constraint::Percentage(85),
                 ],
-            ).split(main_layout[1]);
-
-            frame.render_widget(
-                Paragraph::new("explorer stuff")
-                    .block(Block::default().title("Explorer").borders(Borders::ALL)),
-                main_layout[0],
-            );
+            ).split(main_layout[0]);
 
             let uri_frame = Layout::new(
                 Direction::Horizontal,
@@ -112,6 +120,9 @@ fn main() -> io::Result<()> {
                 left_frame[2],
             );
         })?;
+
+
+            //.border_style(Style::default().fg(Color::LightRed)),
         match crossterm::event::read()?.into() {
             Input { key: Key::Esc, .. } => break,
             Input { key: Key::Char('1'), .. } => {
@@ -179,4 +190,4 @@ fn curl(url: &str, data: &mut Vec<u8>, headers: curl::easy::List) {
     }).unwrap();
 
     transfer.perform().unwrap();
-}
+}*/
