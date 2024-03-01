@@ -7,7 +7,6 @@ use ratatui::layout::Layout;
 use ratatui::style::Color;
 use ratatui::layout::Rect;
 use ratatui::style::Style;
-use ratatui::style::Styled;
 use tui_textarea::Input;
 use tui_textarea::Key;
 use tui_textarea::TextArea;
@@ -46,6 +45,12 @@ impl<'a> Headers<'a> {
         self.selected_textarea = (self.selected_textarea + 1) % 2;
         self.key_value_textarea[self.selected_textarea as usize].set_style(Style::default().fg(Color::Red));
         None
+    }
+
+    pub fn get_key_value_as_string(&mut self) -> String {
+        let key_as_string = self.key_value_textarea[0 as usize].lines()[0].as_str();
+        let value_as_string = self.key_value_textarea[1 as usize].lines()[0].as_str();
+        [key_as_string, value_as_string].join(":")
     }
 }
 
