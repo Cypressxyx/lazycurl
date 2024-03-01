@@ -58,5 +58,4 @@ impl Component for Submit {
         }
         Ok(())
     }
-
 }

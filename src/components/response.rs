@@ -60,5 +60,4 @@ impl Component for Response {
         }
         Ok(())
     }
-
 }
