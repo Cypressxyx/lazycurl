@@ -121,7 +121,10 @@ impl<'a> App<'a> {
 
     fn handle_curl_request(&mut self) {
         self.reset_selected_component();
-        curl(self.url_component.get_url(), &mut self.response, curl::easy::List::new());
+
+        let mut headers = curl::easy::List::new();
+        headers.append(self.header_component.get_key_value().as_str()).unwrap();
+        curl(self.url_component.get_url(), &mut self.response, headers);
         self.response_component.update_response_value(String::from_utf8(self.response.clone()).unwrap())
     }
 }

@@ -47,7 +47,7 @@ impl<'a> Headers<'a> {
         None
     }
 
-    pub fn get_key_value_as_string(&mut self) -> String {
+    pub fn get_key_value(&mut self) -> String {
         let key_as_string = self.key_value_textarea[0 as usize].lines()[0].as_str();
         let value_as_string = self.key_value_textarea[1 as usize].lines()[0].as_str();
         [key_as_string, value_as_string].join(":")
