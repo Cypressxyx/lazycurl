@@ -1,4 +1,5 @@
 use ratatui::{layout::Rect, style::{Color, Style}, widgets::{Block, Borders, Paragraph}};
+use serde_json::Value;
 use tui_textarea::{Input, Key};
 
 use crate::action::Action;
@@ -19,7 +20,8 @@ impl Response {
     }
 
     pub fn update_response_value(&mut self, response: String) {
-        let pretty_json = serde_json::to_string_pretty(&response.as_str())
+        let json: Value = serde_json::from_str(response.as_str()).expect("not valid json");
+        let pretty_json = serde_json::to_string_pretty(&json)
             .expect("Errro found");
 
         self.response_value = pretty_json;
