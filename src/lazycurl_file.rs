@@ -32,7 +32,9 @@ impl LazyCurlFile {
 
     pub fn get_history_lazycurlfiles(&mut self) -> Result<Vec<LazyCurlFile>, Box<dyn std::error::Error>> {
         let mut lazy_curl_files: Vec<LazyCurlFile> = Vec::new();
+       // Ensure the "history" directory exists
         let dir_path = Path::new("history");
+        fs::create_dir_all(dir_path)?;
 
         for entry in fs::read_dir(dir_path)? {
             let entry = entry?;
