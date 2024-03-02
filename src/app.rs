@@ -46,11 +46,18 @@ impl<'a> App<'a> {
                 match action {
                     Action::Suspend => self.reset_selected_component(),
                     Action::CurlRequest => self.handle_curl_request(),
-                    _ => ()
+                    Action::LazycurlFileLoadRequest => self.handle_lazcurlfile_load_request(),
                 }
             };
         }
         Ok(())
+    }
+
+    pub fn handle_lazcurlfile_load_request(&mut self) {
+        if let Some(selected_file) = self.history_component.take_selected_file() {
+            self.url_component = Url::new_withurl(selected_file.url);
+        }
+        self.reset_selected_component()
     }
 
     pub fn handle_key_events(&mut self) -> Option<Action> {

@@ -22,6 +22,11 @@ impl History {
         }
     }
 
+
+    pub fn take_selected_file(&mut self) -> Option<LazyCurlFile> {
+        self.selected_file.take()
+    }
+
     fn handle_load_request(&mut self) -> Option<Action> {
         if self.lazycurl_files.len() < 1 {
             Some(Action::Suspend)

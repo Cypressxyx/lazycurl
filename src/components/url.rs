@@ -27,6 +27,19 @@ impl<'a> Url<'a> {
         }
     }
 
+    pub fn new_withurl(url: String) -> Self {
+        let mut text_area = TextArea::default();
+        text_area.set_block(
+        Block::default()
+            .borders(Borders::ALL)
+            .title("URI"));
+
+        text_area.insert_str(url);
+
+        Self {
+            url_text_area: text_area,
+        }
+    }
     pub fn get_url(&mut self) -> &str{
         self.url_text_area.lines()[0].as_str()
     }
