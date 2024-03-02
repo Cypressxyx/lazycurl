@@ -1,15 +1,17 @@
 use std::{io::{self, Read}, str::FromStr};
-use ratatui::{layout::{Constraint, Direction, Layout}, Frame};
+use ratatui::{layout::{Constraint, Direction, Layout, Rect}, Frame};
 use tui_textarea::{Input, Key};
-use crate::{action::Action, components::{headers::Headers, response::Response, submit::Submit, url::Url, Component}, lazycurl_file::LazyCurlFile, tui};
+use crate::{action::Action, components::{headers::Headers, history::History, response::Response, submit::Submit, url::Url, Component}, lazycurl_file::LazyCurlFile, tui};
 use curl::easy::Easy;
 
+#[derive(PartialEq)]
 pub enum SelectedComponent {
     Main,
     Url,
     Submit,
     Response,
-    Headers
+    Headers,
+    History,
 }
 
 pub struct App<'a> {
@@ -19,6 +21,7 @@ pub struct App<'a> {
     pub selected_component: SelectedComponent,
     pub response_component: Response,
     pub header_component: Headers<'a>,
+    pub history_component: History,
     pub response: Vec<u8>,
 }
 
@@ -30,6 +33,7 @@ impl<'a> App<'a> {
             submit_component: Submit::new(),
             response_component: Response::new(),
             header_component: Headers::new(),
+            history_component: History::new(),
             selected_component: SelectedComponent::Main,
             response: Vec::new(),
         }
@@ -59,6 +63,7 @@ impl<'a> App<'a> {
             SelectedComponent::Submit => self.submit_component.handle_key_events(),
             SelectedComponent::Headers => self.header_component.handle_key_events(),
             SelectedComponent::Response => self.response_component.handle_key_events(),
+            SelectedComponent::History => self.history_component.handle_key_events(),
         }
     }
 
@@ -73,6 +78,10 @@ impl<'a> App<'a> {
     fn handle_component_selection(&mut self) -> io::Result<()> {
         match crossterm::event::read()?.into() {
             Input { key: Key::Esc, .. } => self.handle_exit(),
+            Input { key: Key::Char('h'), .. } => {
+                self.history_component.handle_select();
+                self.selected_component = SelectedComponent::History;
+            },
             Input { key: Key::Char('1'), .. } => {
                 self.url_component.handle_select();
                 self.selected_component = SelectedComponent::Url;
@@ -117,6 +126,11 @@ impl<'a> App<'a> {
         let _  = self.submit_component.render_frame(frame, url_frame[1]);
         let _  = self.header_component.render_frame(frame, main_layout[1]);
         let _  = self.response_component.render_frame(frame, main_layout[2]);
+
+        if self.selected_component == SelectedComponent::History {
+            let area = centered_rect(60, 25, frame.size());
+            let _ = self.history_component.render_frame(frame, area);
+        }
     }
 
     fn handle_curl_request(&mut self) {
@@ -160,3 +174,26 @@ fn curl(url: &str, data: &mut Vec<u8>, headers: curl::easy::List) {
         transfer.perform().unwrap();
      }
 
+
+/// helper function to create a centered rect using up certain percentage of the available rect `r`
+fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
+    // Cut the given rectangle into three vertical pieces
+    let popup_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Percentage((100 - percent_y) / 2),
+            Constraint::Percentage(percent_y),
+            Constraint::Percentage((100 - percent_y) / 2),
+        ])
+        .split(r);
+
+    // Then cut the middle vertical piece into three width-wise pieces
+    Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([
+            Constraint::Percentage((100 - percent_x) / 2),
+            Constraint::Percentage(percent_x),
+            Constraint::Percentage((100 - percent_x) / 2),
+        ])
+        .split(popup_layout[1])[1] // Return the middle chunk
+}
