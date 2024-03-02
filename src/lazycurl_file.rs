@@ -3,7 +3,7 @@ use std::{fs::{self, File}, io::{Read, Write}, path::Path};
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct LazyCurlFile {
     pub url: String
 }
