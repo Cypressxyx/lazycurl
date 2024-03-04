@@ -20,7 +20,7 @@ pub struct App<'a> {
     pub submit_component: Submit,
     pub selected_component: SelectedComponent,
     pub response_component: Response,
-    pub header_component: Headers<'a>,
+    pub headers_component: Headers<'a>,
     pub history_component: History,
     pub response: Vec<u8>,
 }
@@ -32,7 +32,7 @@ impl<'a> App<'a> {
             url_component: Url::new(),
             submit_component: Submit::new(),
             response_component: Response::new(),
-            header_component: Headers::new(),
+            headers_component: Headers::new(),
             history_component: History::new(),
             selected_component: SelectedComponent::Main,
             response: Vec::new(),
@@ -56,6 +56,7 @@ impl<'a> App<'a> {
     pub fn handle_lazcurlfile_load_request(&mut self) {
         if let Some(selected_file) = self.history_component.take_selected_file() {
             self.url_component = Url::new_withurl(selected_file.url);
+            self.headers_component = Headers::new_with_headers(selected_file.headers);
         }
         self.reset_selected_component()
     }
@@ -68,7 +69,7 @@ impl<'a> App<'a> {
             }
             SelectedComponent::Url => self.url_component.handle_key_events(),
             SelectedComponent::Submit => self.submit_component.handle_key_events(),
-            SelectedComponent::Headers => self.header_component.handle_key_events(),
+            SelectedComponent::Headers => self.headers_component.handle_key_events(),
             SelectedComponent::Response => self.response_component.handle_key_events(),
             SelectedComponent::History => self.history_component.handle_key_events(),
         }
@@ -98,7 +99,7 @@ impl<'a> App<'a> {
                 self.selected_component = SelectedComponent::Submit
             },
             Input { key: Key::Char('3'), .. } => {
-                self.header_component.handle_select();
+                self.headers_component.handle_select();
                 self.selected_component = SelectedComponent::Headers
             },
             Input { key: Key::Char('4'), .. } => {
@@ -131,7 +132,7 @@ impl<'a> App<'a> {
 
         let _  = self.url_component.render_frame(frame, url_frame[0]);
         let _  = self.submit_component.render_frame(frame, url_frame[1]);
-        let _  = self.header_component.render_frame(frame, main_layout[1]);
+        let _  = self.headers_component.render_frame(frame, main_layout[1]);
         let _  = self.response_component.render_frame(frame, main_layout[2]);
 
         if self.selected_component == SelectedComponent::History {
@@ -144,7 +145,7 @@ impl<'a> App<'a> {
         self.reset_selected_component();
 
         let mut headers = curl::easy::List::new();
-        let component_headers = self.header_component.get_key_values();
+        let component_headers = self.headers_component.get_key_values();
         component_headers
             .iter()
             .for_each(|f| headers.append(f).unwrap());

@@ -40,6 +40,40 @@ impl<'a> Header<'a> {
         }
     }
 
+    pub fn new_with_key_value_pair(key_value_string: String) -> Self {
+        if key_value_string.len() == 1 && key_value_string.contains(":") {
+            return Header::new();
+        }
+
+        // should consider refactoring to save key and value as seperate
+        // json objects instead as : could be contained in header?
+        let key_value: Vec<&str> = key_value_string.split(":").collect();
+
+        let mut key_textarea = TextArea::default();
+        key_textarea.set_block(
+        Block::default()
+            .borders(Borders::ALL)
+            .title("Key"));
+
+        // can this be 0?
+        key_textarea.insert_str(key_value[0]);
+
+        let mut value_textarea = TextArea::default();
+        value_textarea.set_block(
+        Block::default()
+            .borders(Borders::ALL)
+            .title("Value"));
+
+        // can this be 1?
+        value_textarea.insert_str(key_value[1]);
+
+        Self {
+            key_value_textarea: vec![key_textarea, value_textarea],
+            selected_textarea: 0,
+            selected: false,
+        }
+    }
+
     pub fn toggle_selected_textarea(&mut self) -> Option<Action> {
         self.key_value_textarea[self.selected_textarea as usize].set_style(Style::default());
         self.selected_textarea = (self.selected_textarea + 1) % 2;

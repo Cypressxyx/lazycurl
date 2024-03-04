@@ -29,6 +29,14 @@ impl<'a> Headers<'a> {
         }
     }
 
+    pub fn new_with_headers(headers: Vec<String>) -> Self {
+        Self {
+            headers: headers.into_iter().map(|x| Header::new_with_key_value_pair(x)).collect(),
+            selected_header_index:0,
+            is_in_edit_mode: false,
+        }
+    }
+
     pub fn get_key_values(&mut self) -> Vec<String> {
         self.headers.iter_mut()
             .map(|h| h.get_key_value())
