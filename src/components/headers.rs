@@ -31,11 +31,10 @@ impl<'a> Headers<'a> {
         }
     }
 
-    pub fn get_key_values(&mut self) -> String {
-        let headers = self.headers.iter_mut()
+    pub fn get_key_values(&mut self) -> Vec<String> {
+        self.headers.iter_mut()
             .map(|h| h.get_key_value())
-            .collect::<Vec<_>>();
-        headers.join(",")
+            .collect::<Vec<_>>()
     }
 
     fn handle_traverse_up_request(&mut self) -> Option<Action> {
