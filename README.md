@@ -1,5 +1,5 @@
 <div align="center">
-A simple terminal UI for making HTTP Request calls using Curl. 
+  <p>A simple terminal UI for making HTTP Request calls using Curl.</p>
 
 <p>
 <img src="https://github.com/Jorgexyx/lazycurl/assets/23204093/6f49db4e-e4cf-4d4b-a149-b8d9a1222998" alt="Lazy Curl Logo" width="500"/>
