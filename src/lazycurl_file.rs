@@ -5,13 +5,15 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct LazyCurlFile {
-    pub url: String
+    pub url: String,
+    pub headers: Vec<String>
 }
 
 impl LazyCurlFile {
-    pub fn new(url: String) -> LazyCurlFile {
+    pub fn new(url: String, headers: Vec<String>) -> LazyCurlFile {
         Self {
             url,
+            headers
         }
     }
 

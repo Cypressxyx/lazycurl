@@ -37,7 +37,7 @@ impl History {
     }
 
     fn handle_traverse_up_request(&mut self) -> Option<Action> {
-        if self.currently_selected_file != 0  {
+        if self.currently_selected_file > 0  {
             self.currently_selected_file -= 1;
         }
 
@@ -45,7 +45,11 @@ impl History {
     }
 
     fn handle_traverse_down_request(&mut self) -> Option<Action>{
-        if self.currently_selected_file < self.lazycurl_files.len() - 1  {
+        if self.lazycurl_files.len() == 0 {
+            return None;
+        }
+
+        if self.currently_selected_file < (self.lazycurl_files.len() - 1)  {
             self.currently_selected_file += 1;
         }
 
@@ -53,7 +57,9 @@ impl History {
     }
 
     pub fn get_lazycurl_files(&mut self) {
-        self.lazycurl_files = LazyCurlFile::new(String::new()).get_history_lazycurlfiles().unwrap()
+        self.lazycurl_files = LazyCurlFile::new(
+            String::new(), Vec::<String>::new()
+        ).get_history_lazycurlfiles().unwrap()
     }
 }
 
@@ -93,6 +99,14 @@ impl Component for History {
             .margin(1)
             .constraints(self.lazycurl_files.iter().map(|_| Constraint::Length(3)).collect::<Vec<_>>())
             .split(area);
+
+        if self.lazycurl_files.is_empty() {
+            let mut p = Paragraph::new("No history found")
+                    .block(Block::default().title("History").borders(Borders::ALL));
+            p = p.style(Style::default().bg(Color::Red));
+            frame.render_widget(p, area);
+            return Ok(())
+        }
 
         for (i, lazy_curl_file) in self.lazycurl_files.iter().enumerate() {
             let mut p = Paragraph::new(lazy_curl_file.url.clone())

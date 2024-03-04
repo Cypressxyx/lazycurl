@@ -144,7 +144,8 @@ impl<'a> App<'a> {
         self.reset_selected_component();
 
         let mut headers = curl::easy::List::new();
-        self.header_component.get_key_values()
+        let component_headers = self.header_component.get_key_values();
+        component_headers
             .iter()
             .for_each(|f| headers.append(f).unwrap());
         self.response = Vec::new();
@@ -152,13 +153,13 @@ impl<'a> App<'a> {
         curl(url, &mut self.response, headers);
         let response_string = String::from_utf8(self.response.clone()).unwrap();
         self.response_component.update_response_value(response_string.clone());
-        save_request(url, response_string.clone())
+        save_request(url, component_headers)
     }
 
 }
 
-fn save_request(url: &str, response: String) {
-    let _ = LazyCurlFile::new(String::from_str(url).unwrap()).save();
+fn save_request(url: &str, headers: Vec<String>) {
+    let _ = LazyCurlFile::new(String::from_str(url).unwrap(), headers).save();
 }
 
 fn curl(url: &str, data: &mut Vec<u8>, headers: curl::easy::List) {
