@@ -4,6 +4,8 @@ use super::Component;
 use ratatui::style::Color;
 use ratatui::layout::Rect;
 use ratatui::style::Style;
+use ratatui::style::Styled;
+use ratatui::style::Stylize;
 use tui_textarea::Input;
 use tui_textarea::Key;
 use tui_textarea::TextArea;
@@ -63,12 +65,18 @@ impl<'a> Component for Url<'a> {
     }
 
     fn handle_deselect(&mut self) -> Option<Action> {
-        self.url_text_area.set_style(Style::default());
+        self.url_text_area.set_block(Block::default()
+            .borders(Borders::ALL)
+            .title("URI")
+            .border_style(Style::default()));
         Some(Action::Suspend)
     }
 
     fn handle_select(&mut self) {
-        self.url_text_area.set_style(Style::default().fg(Color::Red));
+        self.url_text_area.set_block(Block::default()
+            .borders(Borders::ALL)
+            .title("URI")
+            .border_style(Style::default().fg(Color::Green)));
     }
 
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
