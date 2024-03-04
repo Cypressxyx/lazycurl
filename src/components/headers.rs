@@ -79,6 +79,8 @@ impl<'a> Headers<'a> {
                     Input { key: Key::Char('k'), .. } => self.handle_traverse_up_request(),
                     Input { key: Key::Char('e'), .. } => self.handle_edit_header(),
                     Input { key: Key::Char('a'), .. } => self.handle_add_header(),
+                    Input { key: Key::Char('['), .. } => Some(Action::TabLeft),
+                    Input { key: Key::Char(']'), .. } => Some(Action::TabRight),
                     _ => {
                         None
                     }

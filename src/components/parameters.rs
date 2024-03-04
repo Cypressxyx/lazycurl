@@ -1,14 +1,14 @@
 use std::usize;
 
 use ratatui::{layout::{Constraint, Direction, Layout, Rect}, style::{Color, Style}, text::Line, widgets::{Block, Borders, Tabs, Widget}};
-use strum::{EnumIter, IntoEnumIterator, Display};
+use strum::{Display, EnumIter, FromRepr, IntoEnumIterator};
 
 use crate::action::Action;
 
-use super::{headers::Headers, Component};
+use super::{body::Body, headers::Headers, Component};
 
 
-#[derive(EnumIter, Display, Copy, Clone)]
+#[derive(EnumIter, Display, Copy, Clone, FromRepr)]
 pub enum SelectedTab {
     Headers,
     Body,
@@ -20,11 +20,24 @@ impl SelectedTab {
         format!(" {self} ")
             .into()
     }
+
+    fn next(self) -> Self {
+        let current_index = self as usize;
+        let next_index = current_index.saturating_add(1);
+        Self::from_repr(next_index).unwrap_or(self)
+    }
+
+    fn previous(self) -> Self {
+        let current_index = self as usize;
+        let next_index = current_index.saturating_sub(1);
+        Self::from_repr(next_index).unwrap_or(self)
+    }
 }
 
 pub struct Parameters<'a> {
     pub selected: bool,
     pub headers_component: Headers<'a>,
+    pub body_component: Body<'a>,
     pub selected_tab: SelectedTab,
 }
 
@@ -34,6 +47,7 @@ impl<'a> Parameters<'a> {
             selected: false,
             headers_component: Headers::new(),
             selected_tab: SelectedTab::Headers,
+            body_component: Body::new(),
         }
     }
 
@@ -42,11 +56,26 @@ impl<'a> Parameters<'a> {
             selected: false,
             headers_component: Headers::new_with_headers(headers),
             selected_tab: SelectedTab::Headers,
+            body_component: Body::new(),
         }
     }
 
     pub fn get_headers(&mut self) -> Vec<String> {
         self.headers_component.get_key_values()
+    }
+
+    pub fn get_body(&mut self) -> &str {
+        self.body_component.get_body_text()
+    }
+
+    pub fn previous_tab(&mut self) -> Option<Action> {
+        self.selected_tab = self.selected_tab.previous();
+        None
+    }
+
+    pub fn next_tab(&mut self) -> Option<Action> {
+        self.selected_tab = self.selected_tab.next();
+        None
     }
 }
 
@@ -54,10 +83,12 @@ impl<'a> Component for Parameters<'a> {
     fn handle_key_events(&mut self) -> Option<Action> {
         let event = match self.selected_tab {
             SelectedTab::Headers => self.headers_component.handle_key_events(),
-            _ => None,
+            SelectedTab::Body => self.body_component.handle_key_events(),
         };
         match event {
             Some(Action::Suspend) => self.handle_deselect(),
+            Some(Action::TabRight) => self.next_tab(),
+            Some(Action::TabLeft) => self.previous_tab(),
             _ => None,
         }
     }
@@ -98,7 +129,7 @@ impl<'a> Component for Parameters<'a> {
 
         let _ = match self.selected_tab {
             SelectedTab::Headers => self.headers_component.render_frame(frame, layout[1]),
-            _ => Ok(()),
+            SelectedTab::Body => self.body_component.render_frame(frame, layout[1])
         };
 
         Ok(())

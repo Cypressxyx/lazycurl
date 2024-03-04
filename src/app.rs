@@ -47,6 +47,8 @@ impl<'a> App<'a> {
                     Action::Suspend => self.reset_selected_component(),
                     Action::CurlRequest => self.handle_curl_request(),
                     Action::LazycurlFileLoadRequest => self.handle_lazcurlfile_load_request(),
+                    Action::TabLeft => (),
+                    Action::TabRight => (),
                 }
             };
         }
@@ -152,7 +154,7 @@ impl<'a> App<'a> {
             .for_each(|f| headers.append(f).unwrap());
         self.response = Vec::new();
         let url = self.url_component.get_url();
-        curl(url, &mut self.response, headers);
+        curl(url, &mut self.response, headers, self.parameters_component.get_body());
         let response_string = String::from_utf8(self.response.clone()).unwrap();
         self.response_component.update_response_value(response_string.clone());
         save_request(url, component_headers)
@@ -164,17 +166,17 @@ fn save_request(url: &str, headers: Vec<String>) {
     let _ = LazyCurlFile::new(String::from_str(url).unwrap(), headers).save();
 }
 
-fn curl(url: &str, data: &mut Vec<u8>, headers: curl::easy::List) {
-        let mut post_data = "{}".as_bytes();
+fn curl(url: &str, data: &mut Vec<u8>, headers: curl::easy::List, post_data: &str) {
+        let mut post_data_as_bytes = post_data.as_bytes();
         let mut easy = Easy::new();
         easy.post(true).unwrap();
         easy.url(url).unwrap();
         easy.http_headers(headers).unwrap();
-        easy.post_field_size(post_data.len() as u64).unwrap();
+        easy.post_field_size(post_data_as_bytes.len() as u64).unwrap();
         let mut transfer = easy.transfer();
 
         transfer.read_function(|buf| {
-            Ok(post_data.read(buf).unwrap_or(0))
+            Ok(post_data_as_bytes.read(buf).unwrap_or(0))
         }).unwrap();
 
 
