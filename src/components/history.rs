@@ -65,6 +65,8 @@ impl Component for History {
                 match event.into() {
                     Input { key: Key::Esc, .. } => self.handle_deselect(),
                     Input { key: Key::Char('l'), .. } => self.handle_load_request(),
+                    Input { key: Key::Enter, .. } => self.handle_load_request(),
+                    Input { key: Key::Char(' '), .. } => self.handle_load_request(),
                     Input { key: Key::Char('j'), .. } => self.handle_traverse_down_request(),
                     Input { key: Key::Char('k'), .. } => self.handle_traverse_up_request(),
                     _ => None

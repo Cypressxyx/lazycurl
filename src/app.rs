@@ -144,7 +144,7 @@ impl<'a> App<'a> {
         self.reset_selected_component();
 
         let mut headers = curl::easy::List::new();
-        headers.append(self.header_component.get_key_value().as_str()).unwrap();
+        headers.append(self.header_component.get_key_values().as_str()).unwrap();
         self.response = Vec::new();
         let url = self.url_component.get_url();
         curl(url, &mut self.response, headers);
