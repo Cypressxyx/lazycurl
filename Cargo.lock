@@ -262,6 +262,8 @@ dependencies = [
  "ratatui",
  "serde",
  "serde_json",
+ "strum",
+ "strum_macros",
  "tui-textarea",
 ]
 

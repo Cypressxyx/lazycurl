@@ -7,8 +7,6 @@ use ratatui::layout::Direction;
 use ratatui::layout::Layout;
 use ratatui::layout::Rect;
 use ratatui::style::Style;
-use ratatui::widgets::Block;
-use ratatui::widgets::Borders;
 use ratatui::widgets::Paragraph;
 use tui_textarea::Input;
 use tui_textarea::Key;
@@ -120,7 +118,6 @@ impl<'a> Component for Headers<'a> {
             .constraints(self.headers.iter().map(|_| Constraint::Length(3)).collect::<Vec<_>>())
             .split(area);
 
-        frame.render_widget(Paragraph::new("").block(Block::default().borders(Borders::ALL).title("Headers")), area);
         for (i, header) in self.headers.iter_mut().enumerate() {
             let _ = header.render_frame(frame, layout[i]);
             if i == self.selected_header_index {
