@@ -121,7 +121,7 @@ impl<'a> Component for Headers<'a> {
         for (i, header) in self.headers.iter_mut().enumerate() {
             let _ = header.render_frame(frame, layout[i]);
             if i == self.selected_header_index {
-                frame.render_widget(Paragraph::new("").style(Style::default().bg(ratatui::style::Color::Green)), layout[i]);
+                frame.render_widget(Paragraph::new("").style(Style::default().bg(ratatui::style::Color::DarkGray)), layout[i]);
             }
         }
 

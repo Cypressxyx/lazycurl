@@ -75,7 +75,6 @@ impl<'a> Component for Parameters<'a> {
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
         let layout = Layout::default()
             .direction(Direction::Vertical)
-            .margin(1)
             .constraints([
                 Constraint::Percentage(10),
                 Constraint::Percentage(90),

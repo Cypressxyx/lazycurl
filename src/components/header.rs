@@ -135,8 +135,7 @@ impl<'a> Component for Header<'a> {
         ).split(area);
 
         let mut row_block = Block::default()
-            .title("")
-            .borders(Borders::ALL);
+            .title("");
 
         if self.selected {
             row_block = row_block.style(Style::default().bg(Color::Cyan));
