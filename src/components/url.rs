@@ -19,10 +19,11 @@ pub struct Url<'a>  {
 impl<'a> Url<'a> {
     pub fn new() -> Self {
         let mut text_area = TextArea::default();
+        text_area.set_placeholder_text("Enter URL or paste text");
         text_area.set_block(
         Block::default()
             .borders(Borders::ALL)
-            .title("URI"));
+            .title("URI (press e to edit)"));
 
         Self {
             url_text_area: text_area,
