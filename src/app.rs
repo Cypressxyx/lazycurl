@@ -118,8 +118,8 @@ impl<'a> App<'a> {
         let main_layout = Layout::new(
             Direction::Vertical,
             [
-                Constraint::Percentage(8),
-                Constraint::Percentage(30),
+                Constraint::Percentage(5),
+                Constraint::Percentage(33),
                 Constraint::Percentage(62),
             ],
         ).split(frame.size());
