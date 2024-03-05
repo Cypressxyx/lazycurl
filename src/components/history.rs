@@ -1,6 +1,6 @@
 use std::usize;
 
-use ratatui::{layout::{Constraint, Direction, Layout, Rect}, style::{Color, Style}, widgets::{Block, Borders, Paragraph}};
+use ratatui::{layout::{Constraint, Direction, Layout, Rect}, style::{Color, Style}, symbols::scrollbar, widgets::{Block, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState}};
 use tui_textarea::{Input, Key};
 
 use crate::{action::Action, lazycurl_file:: LazyCurlFile};
@@ -118,6 +118,15 @@ impl Component for History {
 
             frame.render_widget(p, layout[i]);
         }
+
+        frame.render_stateful_widget(
+            Scrollbar::new(ScrollbarOrientation::VerticalRight)
+                .symbols(scrollbar::VERTICAL)
+                .track_symbol(Some("─"))
+                .begin_symbol(Some("↑"))
+                .end_symbol(Some("↓")),
+            area,
+            &mut ScrollbarState::new(20));
 
         Ok(())
     }
