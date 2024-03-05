@@ -1,6 +1,6 @@
 use std::usize;
 
-use ratatui::{layout::{Constraint, Direction, Layout, Rect}, style::{Color, Style}, symbols::scrollbar, widgets::{Block, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState}};
+use ratatui::{layout::Rect, style::{Color, Style}, symbols::scrollbar, text::Line, widgets::{Block, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState}};
 use tui_textarea::{Input, Key};
 
 use crate::{action::Action, lazycurl_file:: LazyCurlFile};
@@ -10,7 +10,8 @@ use super::Component;
 pub struct History {
     selected_file: Option<LazyCurlFile>,
     currently_selected_file: usize,
-    lazycurl_files: Vec<LazyCurlFile>
+    lazycurl_files: Vec<LazyCurlFile>,
+    scrollbar_state: ScrollbarState,
 }
 
 impl History {
@@ -19,6 +20,7 @@ impl History {
             selected_file: None,
             currently_selected_file: 0,
             lazycurl_files: Vec::new(),
+            scrollbar_state: ScrollbarState::new(0),
         }
     }
 
@@ -41,6 +43,7 @@ impl History {
             self.currently_selected_file -= 1;
         }
 
+        self.scrollbar_state = self.scrollbar_state.position(self.currently_selected_file);
         None
     }
 
@@ -53,13 +56,17 @@ impl History {
             self.currently_selected_file += 1;
         }
 
+        self.scrollbar_state = self.scrollbar_state.position(self.currently_selected_file);
+
         None
     }
 
     pub fn get_lazycurl_files(&mut self) {
         self.lazycurl_files = LazyCurlFile::new(
             String::new(), Vec::<String>::new()
-        ).get_history_lazycurlfiles().unwrap()
+        ).get_history_lazycurlfiles().unwrap();
+
+        self.scrollbar_state = self.scrollbar_state.content_length(self.lazycurl_files.len())
     }
 }
 
@@ -94,12 +101,6 @@ impl Component for History {
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
         self.get_lazycurl_files();
 
-        let layout = Layout::default()
-            .direction(Direction::Vertical)
-            .margin(1)
-            .constraints(self.lazycurl_files.iter().map(|_| Constraint::Length(3)).collect::<Vec<_>>())
-            .split(area);
-
         if self.lazycurl_files.is_empty() {
             let mut p = Paragraph::new("No history found")
                     .block(Block::default().title("History").borders(Borders::ALL));
@@ -108,25 +109,33 @@ impl Component for History {
             return Ok(())
         }
 
-        for (i, lazy_curl_file) in self.lazycurl_files.iter().enumerate() {
-            let mut p = Paragraph::new(lazy_curl_file.url.clone())
-                    .block(Block::default().title("History").borders(Borders::ALL));
-            p = p.style(Style::default().bg(Color::Red));
-            if i == self.currently_selected_file {
-                p = p.style(Style::default().bg(Color::Green));
-            }
+        let paragraph = Paragraph::new(self.lazycurl_files
+                .iter()
+                .enumerate()
+                .map(|(index, f)| {
+                        if index == self.currently_selected_file {
+                            Line::from(f.url.clone()).style(Style::default().bg(Color::Blue))
+                        } else {
+                            Line::from(f.url.clone())
+                        }
+                })
+                .collect::<Vec<_>>())
+            .block(Block::default()
+                .borders(Borders::ALL)
+                .title("History")
+                .border_style(Style::default().fg(Color::Green)))
+            .scroll((self.currently_selected_file as u16, 0));
 
-            frame.render_widget(p, layout[i]);
-        }
+        frame.render_widget(paragraph, area);
+
 
         frame.render_stateful_widget(
             Scrollbar::new(ScrollbarOrientation::VerticalRight)
                 .symbols(scrollbar::VERTICAL)
-                .track_symbol(Some("─"))
                 .begin_symbol(Some("↑"))
                 .end_symbol(Some("↓")),
             area,
-            &mut ScrollbarState::new(20));
+            &mut self.scrollbar_state);
 
         Ok(())
     }

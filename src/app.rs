@@ -118,8 +118,8 @@ impl<'a> App<'a> {
         let main_layout = Layout::new(
             Direction::Vertical,
             [
-                Constraint::Percentage(5),
-                Constraint::Percentage(33),
+                Constraint::Percentage(10),
+                Constraint::Percentage(28),
                 Constraint::Percentage(62),
             ],
         ).split(frame.size());
@@ -134,7 +134,6 @@ impl<'a> App<'a> {
 
         let _  = self.url_component.render_frame(frame, url_frame[0]);
         let _  = self.submit_component.render_frame(frame, url_frame[1]);
-        //let _  = self.headers_component.render_frame(frame, main_layout[1]);
         let _  = self.parameters_component.render_frame(frame, main_layout[1]);
         let _  = self.response_component.render_frame(frame, main_layout[2]);
 
