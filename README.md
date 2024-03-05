@@ -11,3 +11,7 @@
 
 ![example image](https://github.com/Jorgexyx/LazyCurl/blob/main/example.png)
 <br/>
+
+## Why
+
+Alternative to postman without all the  bloat
