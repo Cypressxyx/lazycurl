@@ -4,8 +4,6 @@ use super::Component;
 use ratatui::style::Color;
 use ratatui::layout::Rect;
 use ratatui::style::Style;
-use ratatui::style::Styled;
-use ratatui::style::Stylize;
 use tui_textarea::Input;
 use tui_textarea::Key;
 use tui_textarea::TextArea;
@@ -35,7 +33,7 @@ impl<'a> Url<'a> {
         text_area.set_block(
         Block::default()
             .borders(Borders::ALL)
-            .title("URI"));
+            .title("URI (press e to edit)"));
 
         text_area.insert_str(url);
 
@@ -68,7 +66,7 @@ impl<'a> Component for Url<'a> {
     fn handle_deselect(&mut self) -> Option<Action> {
         self.url_text_area.set_block(Block::default()
             .borders(Borders::ALL)
-            .title("URI")
+            .title("URI (press e to edit)")
             .border_style(Style::default()));
         Some(Action::Suspend)
     }
@@ -76,7 +74,7 @@ impl<'a> Component for Url<'a> {
     fn handle_select(&mut self) {
         self.url_text_area.set_block(Block::default()
             .borders(Borders::ALL)
-            .title("URI")
+            .title("URI (press e to edit)")
             .border_style(Style::default().fg(Color::Green)));
     }
 
