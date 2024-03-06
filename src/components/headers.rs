@@ -101,10 +101,7 @@ impl<'a> Headers<'a> {
                         self.handle_deselect();
                         Some(Action::Window4Request)
                     },
-
-                    _ => {
-                        None
-                    }
+                    _ => None
                 }
             }
             Err(_) => Some(Action::Suspend)
