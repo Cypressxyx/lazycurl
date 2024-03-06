@@ -55,7 +55,7 @@ impl Component for Response {
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
         if self.selected {
             let p = Paragraph::new(self.response_value.as_str())
-                        .block(Block::default().title("Response").borders(Borders::ALL).style(Style::default().fg(Color::Red)));
+                        .block(Block::default().title("Response").borders(Borders::ALL).style(Style::default().fg(Color::Green)));
             frame.render_widget(p, area);
 
         } else {
