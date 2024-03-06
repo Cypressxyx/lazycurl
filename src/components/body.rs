@@ -1,5 +1,4 @@
-use ratatui::{layout::{Constraint, Direction, Layout, Rect}, style::{Color, Style}, widgets::{Block, Borders, Paragraph}};
-use serde_json::Value;
+use ratatui::{layout::{Constraint, Direction, Layout, Rect}, widgets::{Block, Borders}};
 use tui_textarea::{Input, Key, TextArea};
 
 use crate::action::Action;
@@ -15,7 +14,7 @@ pub struct Body<'a> {
 
 impl<'a> Body<'a> {
     pub fn new() -> Self {
-        let mut text_area = TextArea::default();
+        let text_area = TextArea::default();
         Block::default()
             .borders(Borders::ALL)
             .title("");
