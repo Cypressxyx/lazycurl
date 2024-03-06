@@ -87,7 +87,7 @@ impl<'a> App<'a> {
 
     fn handle_component_selection(&mut self) -> io::Result<()> {
         match crossterm::event::read()?.into() {
-            Input { key: Key::Esc, .. } => self.handle_exit(),
+            Input { key: Key::Char('q'), .. } => self.handle_exit(),
             Input { key: Key::Char('h'), .. } => {
                 self.history_component.handle_select();
                 self.selected_component = SelectedComponent::History;
