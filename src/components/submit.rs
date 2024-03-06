@@ -1,5 +1,5 @@
-use ratatui::{layout::Rect, style::{Color, Style}, widgets::{Block, Borders, Paragraph}};
 use tui_textarea::{Input, Key};
+use ratatui::{layout::Rect, style::{Color, Style}, widgets::{Block, Borders, Paragraph}};
 
 use crate::action::Action;
 
@@ -69,7 +69,7 @@ impl Component for Submit {
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
         if self.selected {
             let p = Paragraph::new("Send")
-                        .block(Block::default().title("").borders(Borders::ALL).style(Style::default().fg(Color::Red)));
+                        .block(Block::default().title("").borders(Borders::ALL).style(Style::default().fg(Color::Green)));
             frame.render_widget(p, area);
 
         } else {
