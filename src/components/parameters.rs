@@ -89,7 +89,13 @@ impl<'a> Component for Parameters<'a> {
             Some(Action::Suspend) => self.handle_deselect(),
             Some(Action::TabRight) => self.next_tab(),
             Some(Action::TabLeft) => self.previous_tab(),
-            _ => None,
+            some_action => {
+                if some_action.is_some() {
+                    self.handle_deselect();
+                    return some_action;
+                }
+                None
+            },
         }
     }
 
