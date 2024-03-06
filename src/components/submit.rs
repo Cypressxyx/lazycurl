@@ -28,6 +28,27 @@ impl Component for Submit {
                         self.handle_deselect();
                         Some(Action::CurlRequest)
                     },
+                    Input { key: Key::Char('h'), .. } => {
+                        self.handle_deselect();
+                        Some(Action::HistoryRequest)
+                    },
+                    Input { key: Key::Char('1'), .. } => {
+                        self.handle_deselect();
+                        Some(Action::Window1Request)
+                    },
+                    Input { key: Key::Char('2'), .. } => {
+                        self.handle_deselect();
+                        Some(Action::Window2Request)
+                    },
+                    Input { key: Key::Char('3'), .. } => {
+                        self.handle_deselect();
+                        Some(Action::Window3Request)
+                    },
+                    Input { key: Key::Char('4'), .. } => {
+                        self.handle_deselect();
+                        Some(Action::Window4Request)
+                    },
+
                     _ => None
                 }
             }
