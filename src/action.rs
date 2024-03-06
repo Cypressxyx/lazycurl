@@ -6,4 +6,9 @@ pub enum Action {
     LazycurlFileLoadRequest,
     TabLeft,
     TabRight,
+    Window1Request,
+    Window2Request,
+    Window3Request,
+    Window4Request,
+    HistoryRequest,
 }

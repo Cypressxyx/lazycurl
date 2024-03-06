@@ -18,10 +18,10 @@ pub struct App<'a> {
     pub exit: bool,
     pub url_component: Url<'a>,
     pub submit_component: Submit,
-    pub selected_component: SelectedComponent,
     pub response_component: Response,
     pub history_component: History,
     pub parameters_component: Parameters<'a>,
+    pub selected_component: SelectedComponent,
     pub response: Vec<u8>,
 }
 
@@ -43,13 +43,7 @@ impl<'a> App<'a> {
         while !self.exit {
             terminal.draw(|frame| self.render_frame(frame))?;
             if let Some(action) = self.handle_key_events() {
-                match action {
-                    Action::Suspend => self.reset_selected_component(),
-                    Action::CurlRequest => self.handle_curl_request(),
-                    Action::LazycurlFileLoadRequest => self.handle_lazcurlfile_load_request(),
-                    Action::TabLeft => (),
-                    Action::TabRight => (),
-                }
+                self.handle_action(action);
             };
         }
         Ok(())
@@ -83,6 +77,37 @@ impl<'a> App<'a> {
 
     fn reset_selected_component(&mut self) {
         self.selected_component = SelectedComponent::Main;
+    }
+
+    fn handle_action(&mut self, action: Action) {
+        match action {
+            Action::Suspend => self.reset_selected_component(),
+            Action::CurlRequest => self.handle_curl_request(),
+            Action::LazycurlFileLoadRequest => self.handle_lazcurlfile_load_request(),
+            Action::TabLeft => (),
+            Action::TabRight => (),
+            Action::Window1Request => {
+                self.url_component.handle_select();
+                self.selected_component = SelectedComponent::Url;
+            }
+            Action::Window2Request => {
+                self.submit_component.handle_select();
+                self.selected_component = SelectedComponent::Submit
+
+            }
+            Action::Window3Request => {
+                self.parameters_component.handle_select();
+                self.selected_component = SelectedComponent::Parameters
+            }
+            Action::Window4Request => {
+                self.response_component.handle_select();
+                self.selected_component = SelectedComponent::Response
+            }
+            Action::HistoryRequest => {
+                self.history_component.handle_select();
+                self.selected_component = SelectedComponent::History;
+            },
+        }
     }
 
     fn handle_component_selection(&mut self) -> io::Result<()> {
