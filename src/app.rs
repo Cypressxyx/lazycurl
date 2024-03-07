@@ -1,7 +1,7 @@
 use std::{io::{self, Read}, str::FromStr};
 use ratatui::{layout::{Constraint, Direction, Layout, Rect}, Frame};
 use tui_textarea::{Input, Key};
-use crate::{action::Action, components::{history::History, parameters::Parameters, response::Response, submit::Submit, url::Url, Component}, lazycurl_file::LazyCurlFile, tui};
+use crate::{action::Action, components::{history::History, http_method::HTTPMethod, parameters::Parameters, response::Response, submit::Submit, url::Url, Component}, lazycurl_file::LazyCurlFile, tui};
 use curl::easy::Easy;
 
 #[derive(PartialEq)]
@@ -21,6 +21,7 @@ pub struct App<'a> {
     pub response_component: Response,
     pub history_component: History,
     pub parameters_component: Parameters<'a>,
+    pub httpmethod_component: HTTPMethod,
     pub selected_component: SelectedComponent,
     pub response: Vec<u8>,
 }
@@ -35,6 +36,7 @@ impl<'a> App<'a> {
             history_component: History::new(),
             selected_component: SelectedComponent::Main,
             parameters_component: Parameters::new(),
+            httpmethod_component: HTTPMethod::new(),
             response: Vec::new(),
         }
     }
@@ -143,8 +145,8 @@ impl<'a> App<'a> {
         let main_layout = Layout::new(
             Direction::Vertical,
             [
-                Constraint::Percentage(10),
-                Constraint::Percentage(28),
+                Constraint::Percentage(7),
+                Constraint::Percentage(31),
                 Constraint::Percentage(62),
             ],
         ).split(frame.size());
@@ -152,13 +154,15 @@ impl<'a> App<'a> {
         let url_frame = Layout::new(
             Direction::Horizontal,
             [
+                Constraint::Percentage(5),
                 Constraint::Percentage(90),
-                Constraint::Percentage(10),
+                Constraint::Percentage(5),
             ],
         ).split(main_layout[0]);
 
-        let _  = self.url_component.render_frame(frame, url_frame[0]);
-        let _  = self.submit_component.render_frame(frame, url_frame[1]);
+        let _ = self.httpmethod_component.render_frame(frame, url_frame[0]);
+        let _  = self.url_component.render_frame(frame, url_frame[1]);
+        let _  = self.submit_component.render_frame(frame, url_frame[2]);
         let _  = self.parameters_component.render_frame(frame, main_layout[1]);
         let _  = self.response_component.render_frame(frame, main_layout[2]);
 
