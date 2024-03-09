@@ -9,7 +9,6 @@ pub struct Body<'a> {
     pub selected: bool,
     pub body_textarea: TextArea<'a>,
     pub is_edit_mode: bool,
-
 }
 
 impl<'a> Body<'a> {

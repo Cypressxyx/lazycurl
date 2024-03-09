@@ -5,6 +5,7 @@ pub mod tui;
 pub mod components;
 pub mod action;
 pub mod lazycurl_file;
+pub mod utils;
 
 use crate::app::App;
 

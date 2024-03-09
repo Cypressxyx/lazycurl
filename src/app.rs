@@ -1,7 +1,13 @@
 use std::{io::{self, Read}, str::FromStr};
-use ratatui::{layout::{Constraint, Direction, Layout, Rect}, Frame};
+use ratatui::{layout::{Constraint, Direction, Layout}, Frame};
 use tui_textarea::{Input, Key};
-use crate::{action::Action, components::{history::History, http_method::HTTPMethod, parameters::Parameters, response::Response, submit::Submit, url::Url, Component}, lazycurl_file::LazyCurlFile, tui};
+use crate::{
+    action::Action,
+    components::{history::History, http_method::HTTPMethod, parameters::Parameters, response::Response, submit::Submit, url::Url, Component},
+    lazycurl_file::LazyCurlFile,
+    tui,
+    utils::tui_frame_util::centered_rect
+};
 use curl::easy::Easy;
 
 #[derive(PartialEq)]
@@ -216,26 +222,3 @@ fn curl(url: &str, data: &mut Vec<u8>, headers: curl::easy::List, post_data: &st
         transfer.perform().unwrap();
      }
 
-
-/// helper function to create a centered rect using up certain percentage of the available rect `r`
-fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
-    // Cut the given rectangle into three vertical pieces
-    let popup_layout = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Percentage((100 - percent_y) / 2),
-            Constraint::Percentage(percent_y),
-            Constraint::Percentage((100 - percent_y) / 2),
-        ])
-        .split(r);
-
-    // Then cut the middle vertical piece into three width-wise pieces
-    Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([
-            Constraint::Percentage((100 - percent_x) / 2),
-            Constraint::Percentage(percent_x),
-            Constraint::Percentage((100 - percent_x) / 2),
-        ])
-        .split(popup_layout[1])[1] // Return the middle chunk
-}
