@@ -3,7 +3,14 @@ use ratatui::{layout::{Constraint, Direction, Layout}, Frame};
 use tui_textarea::{Input, Key};
 use crate::{
     action::Action,
-    components::{history::History, http_method::HTTPMethod, parameters::Parameters, response::Response, submit::Submit, url::Url, Component},
+    components::{
+        history::History,
+        http_method::HTTPMethod,
+        parameters::Parameters,
+        response::Response,
+        submit::Submit,
+        url::Url, Component
+    },
     lazycurl_file::LazyCurlFile,
     tui,
     utils::tui_frame_util::centered_rect
