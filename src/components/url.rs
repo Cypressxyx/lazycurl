@@ -1,4 +1,5 @@
 use crate::action::Action;
+use crate::utils::tui_frame_util::centered_rect;
 
 use super::Component;
 use ratatui::style::Color;
@@ -73,6 +74,11 @@ impl<'a> Url<'a> {
             Err(_) => Some(Action::Suspend)
         }
     }
+
+    pub fn render_edit_mode_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>) {
+        let area = centered_rect(60, 25, frame.size());
+        frame.render_widget(self.url_text_area.widget(), area);
+    }
 }
 
 impl<'a> Component for Url<'a> {
@@ -131,6 +137,11 @@ impl<'a> Component for Url<'a> {
 
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
         frame.render_widget(self.url_text_area.widget(), area);
+
+        if self.edit_mode {
+            self.render_edit_mode_frame(frame)
+        }
+
         Ok(())
     }
 }
