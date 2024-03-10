@@ -1,21 +1,16 @@
-use std::{io::{self, Read}, str::FromStr};
+use std::{io::{self}, str::FromStr};
 use ratatui::{layout::{Constraint, Direction, Layout}, Frame};
 use tui_textarea::{Input, Key};
 use crate::{
-    action::Action,
-    components::{
+    action::Action, components::{
         history::History,
         http_method::HTTPMethod,
         parameters::Parameters,
         response::Response,
         submit::Submit,
         url::Url, Component
-    },
-    lazycurl_file::LazyCurlFile,
-    tui,
-    utils::tui_frame_util::centered_rect
+    }, lazycurl_file::LazyCurlFile, tui, utils::{curl_service::curl_call, tui_frame_util::centered_rect}
 };
-use curl::easy::Easy;
 
 #[derive(PartialEq)]
 pub enum SelectedComponent {
@@ -158,9 +153,9 @@ impl<'a> App<'a> {
         let main_layout = Layout::new(
             Direction::Vertical,
             [
-                Constraint::Percentage(7),
-                Constraint::Percentage(31),
-                Constraint::Percentage(62),
+                Constraint::Percentage(10),
+                Constraint::Percentage(30),
+                Constraint::Percentage(60),
             ],
         ).split(frame.size());
 
@@ -174,10 +169,10 @@ impl<'a> App<'a> {
         ).split(main_layout[0]);
 
         let _ = self.httpmethod_component.render_frame(frame, url_frame[0]);
-        let _  = self.url_component.render_frame(frame, url_frame[1]);
         let _  = self.submit_component.render_frame(frame, url_frame[2]);
         let _  = self.parameters_component.render_frame(frame, main_layout[1]);
         let _  = self.response_component.render_frame(frame, main_layout[2]);
+        let _  = self.url_component.render_frame(frame, url_frame[1]);
 
         if self.selected_component == SelectedComponent::History {
             let area = centered_rect(60, 25, frame.size());
@@ -194,11 +189,13 @@ impl<'a> App<'a> {
             .iter()
             .for_each(|f| headers.append(f).unwrap());
         self.response = Vec::new();
-        let url = self.url_component.get_url();
-        curl(url, &mut self.response, headers, self.parameters_component.get_body());
+        let url = self.url_component.get_url().to_owned();
+        let method = self.url_component.get_method();
+
+        curl_call(url.as_str(), &mut self.response, headers, self.parameters_component.get_body(), method);
         let response_string = String::from_utf8(self.response.clone()).unwrap();
         self.response_component.update_response_value(response_string.clone());
-        save_request(url, component_headers)
+        save_request(url.as_str(), component_headers)
     }
 
 }
@@ -206,26 +203,4 @@ impl<'a> App<'a> {
 fn save_request(url: &str, headers: Vec<String>) {
     let _ = LazyCurlFile::new(String::from_str(url).unwrap(), headers).save();
 }
-
-fn curl(url: &str, data: &mut Vec<u8>, headers: curl::easy::List, post_data: &str) {
-        let mut post_data_as_bytes = post_data.as_bytes();
-        let mut easy = Easy::new();
-        easy.post(true).unwrap();
-        easy.url(url).unwrap();
-        easy.http_headers(headers).unwrap();
-        easy.post_field_size(post_data_as_bytes.len() as u64).unwrap();
-        let mut transfer = easy.transfer();
-
-        transfer.read_function(|buf| {
-            Ok(post_data_as_bytes.read(buf).unwrap_or(0))
-        }).unwrap();
-
-
-        transfer.write_function(|d| {
-            data.extend_from_slice(d);
-            Ok(d.len())
-        }).unwrap();
-
-        transfer.perform().unwrap();
-     }
 

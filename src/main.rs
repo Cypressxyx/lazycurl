@@ -6,6 +6,7 @@ pub mod components;
 pub mod action;
 pub mod lazycurl_file;
 pub mod utils;
+pub mod http_method;
 
 use crate::app::App;
 

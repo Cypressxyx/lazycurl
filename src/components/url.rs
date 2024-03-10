@@ -1,10 +1,17 @@
 use crate::action::Action;
+use crate::http_method::HTTPMethod;
 use crate::utils::tui_frame_util::centered_rect;
 
 use super::Component;
+use ratatui::layout::Constraint;
+use ratatui::layout::Direction;
+use ratatui::layout::Layout;
 use ratatui::style::Color;
 use ratatui::layout::Rect;
 use ratatui::style::Style;
+use ratatui::widgets::Tabs;
+use ratatui::widgets::Widget;
+use strum::IntoEnumIterator;
 use tui_textarea::Input;
 use tui_textarea::Key;
 use tui_textarea::TextArea;
@@ -14,6 +21,8 @@ use ratatui::widgets::Borders;
 pub struct Url<'a>  {
     pub url_text_area: TextArea<'a>,
     pub edit_mode: bool,
+    pub http_method: HTTPMethod,
+    pub selected: bool,
 }
 
 impl<'a> Url<'a> {
@@ -22,12 +31,13 @@ impl<'a> Url<'a> {
         text_area.set_placeholder_text("Enter URL or paste text");
         text_area.set_block(
         Block::default()
-            .borders(Borders::ALL)
-            .title("URI (press e to edit)"));
+            .title(""));
 
         Self {
             url_text_area: text_area,
             edit_mode: false,
+            http_method: HTTPMethod::POST,
+            selected: false,
         }
     }
 
@@ -35,26 +45,40 @@ impl<'a> Url<'a> {
         let mut text_area = TextArea::default();
         text_area.set_block(
         Block::default()
-            .borders(Borders::ALL)
-            .title("URI (press e to edit)"));
+            .title(""));
 
         text_area.insert_str(url);
 
         Self {
             url_text_area: text_area,
             edit_mode: false,
+            http_method: HTTPMethod::POST,
+            selected: false,
         }
     }
+
     pub fn get_url(&mut self) -> &str{
         self.url_text_area.lines()[0].as_str()
     }
 
+    pub fn get_method(&mut self) -> HTTPMethod {
+        self.http_method
+    }
+
     pub fn handle_edit_mode(&mut self) -> Option<Action> {
+        self.url_text_area.set_block(Block::default()
+            .borders(Borders::ALL)
+            .title(" Editing URL ")
+            .border_style(Style::default().fg(Color::Green)));
         self.edit_mode = true;
         None
     }
 
     pub fn handle_exit_edit_mode(&mut self) -> Option<Action> {
+        self.url_text_area.set_block(Block::default()
+            .title("")
+            .border_style(Style::default()));
+
         self.edit_mode = false;
         None
     }
@@ -93,6 +117,14 @@ impl<'a> Component for Url<'a> {
                 match event.into() {
                     Input { key: Key::Esc, .. } => self.handle_deselect(),
                     Input { key: Key::Char('e'), .. } => self.handle_edit_mode(),
+                    Input { key: Key::Char('['), .. } => {
+                        self.http_method = self.http_method.prev();
+                        None
+                    },
+                    Input { key: Key::Char(']'), .. } => {
+                        self.http_method = self.http_method.next();
+                        None
+                    },
                     Input { key: Key::Char('h'), .. } => {
                         self.handle_deselect();
                         Some(Action::HistoryRequest)
@@ -121,27 +153,41 @@ impl<'a> Component for Url<'a> {
     }
 
     fn handle_deselect(&mut self) -> Option<Action> {
-        self.url_text_area.set_block(Block::default()
-            .borders(Borders::ALL)
-            .title("URI (press e to edit)")
-            .border_style(Style::default()));
+        self.selected = false;
         Some(Action::Suspend)
     }
 
     fn handle_select(&mut self) {
-        self.url_text_area.set_block(Block::default()
-            .borders(Borders::ALL)
-            .title("URI (press e to edit)")
-            .border_style(Style::default().fg(Color::Green)));
+        self.selected =  true;
     }
 
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
-        frame.render_widget(self.url_text_area.widget(), area);
 
+
+        let http_method_lines = HTTPMethod::iter().map(HTTPMethod::line);
+        let mut border_style = Style::default();
+
+        if self.selected {
+            border_style.fg = Some(Color::Green);
+        }
+
+        Tabs::new(http_method_lines)
+            .block(Block::default().borders(Borders::ALL).title("URL (press E to edit)").border_style(border_style))
+            .highlight_style(Color::Yellow)
+            .select(self.http_method as usize)
+            .divider("|")
+            .render(area, frame.buffer_mut());
+
+        let layout = Layout::default()
+            .direction(Direction::Vertical)
+            .margin(1)
+            .constraints([Constraint::Percentage(100)])
+            .split(area);
+
+        frame.render_widget(self.url_text_area.widget(), layout[0]);
         if self.edit_mode {
             self.render_edit_mode_frame(frame)
         }
-
         Ok(())
     }
 }
