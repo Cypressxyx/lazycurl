@@ -11,7 +11,6 @@ pub mod header;
 pub mod history;
 pub mod parameters;
 pub mod body;
-pub mod http_method;
 
 /// `Component` is a trait that represents a visual and interactive element of the user interface.
 /// Implementors of this trait can be registered with the main application loop and will be able to receive events,
