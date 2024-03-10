@@ -20,11 +20,10 @@ impl Response {
     }
 
     pub fn update_response_value(&mut self, response: String) {
-        let json: Value = serde_json::from_str(response.as_str()).expect("not valid json");
-        let pretty_json = serde_json::to_string_pretty(&json)
-            .expect("Errro found");
-
-        self.response_value = pretty_json;
+        self.response_value = match serde_json::from_str::<Value>(response.as_str()) {
+            Ok(v) => serde_json::to_string_pretty(&v).expect("Erro found"),
+            Err(_) => response.clone()
+        };
     }
 }
 
