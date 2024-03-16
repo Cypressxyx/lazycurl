@@ -103,6 +103,11 @@ impl<'a> Url<'a> {
         let area = centered_rect(60, 25, frame.size());
         frame.render_widget(self.url_text_area.widget(), area);
     }
+
+    pub fn handle_submit(&mut self) -> Option<Action> {
+        self.handle_deselect();
+        Some(Action::CurlRequest)
+    }
 }
 
 impl<'a> Component for Url<'a> {
@@ -117,7 +122,7 @@ impl<'a> Component for Url<'a> {
                 match event.into() {
                     Input { key: Key::Esc, .. } => self.handle_deselect(),
                     Input { key: Key::Char('e'), .. } => self.handle_edit_mode(),
-                    Input { key: Key::Char('['), .. } => {
+                    Input { key: Key::Enter, .. } => self.handle_submit(),                    Input { key: Key::Char('['), .. } => {
                         self.http_method = self.http_method.prev();
                         None
                     },
@@ -162,8 +167,6 @@ impl<'a> Component for Url<'a> {
     }
 
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
-
-
         let http_method_lines = HTTPMethod::iter().map(HTTPMethod::line);
         let mut border_style = Style::default();
 
@@ -172,7 +175,7 @@ impl<'a> Component for Url<'a> {
         }
 
         Tabs::new(http_method_lines)
-            .block(Block::default().borders(Borders::ALL).title("URL (press E to edit)").border_style(border_style))
+            .block(Block::default().borders(Borders::ALL).title("URL (press E to edit, enter to submit)").border_style(border_style))
             .highlight_style(Color::Yellow)
             .select(self.http_method as usize)
             .divider("|")
