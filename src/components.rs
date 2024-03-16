@@ -4,7 +4,6 @@ use ratatui::{layout::Rect, Frame};
 use crate::action::Action;
 
 pub mod url;
-pub mod submit;
 pub mod response;
 pub mod headers;
 pub mod header;

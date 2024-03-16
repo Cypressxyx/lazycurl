@@ -146,10 +146,6 @@ impl<'a> Component for Url<'a> {
                         self.handle_deselect();
                         Some(Action::Window3Request)
                     },
-                    Input { key: Key::Char('4'), .. } => {
-                        self.handle_deselect();
-                        Some(Action::Window4Request)
-                    },
                     _ => None 
                 }
             }

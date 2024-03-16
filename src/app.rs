@@ -6,7 +6,6 @@ use crate::{
         history::History,
         parameters::Parameters,
         response::Response,
-        submit::Submit,
         url::Url, Component
     }, lazycurl_file::LazyCurlFile, tui, utils::{curl_service::curl_call, tui_frame_util::centered_rect}
 };
@@ -15,7 +14,6 @@ use crate::{
 pub enum SelectedComponent {
     Main,
     Url,
-    Submit,
     Response,
     History,
     Parameters,
@@ -24,7 +22,6 @@ pub enum SelectedComponent {
 pub struct App<'a> {
     pub exit: bool,
     pub url_component: Url<'a>,
-    pub submit_component: Submit,
     pub response_component: Response,
     pub history_component: History,
     pub parameters_component: Parameters<'a>,
@@ -37,7 +34,6 @@ impl<'a> App<'a> {
         Self {
             exit: false,
             url_component: Url::new(),
-            submit_component: Submit::new(),
             response_component: Response::new(),
             history_component: History::new(),
             selected_component: SelectedComponent::Main,
@@ -71,7 +67,6 @@ impl<'a> App<'a> {
                 None
             }
             SelectedComponent::Url => self.url_component.handle_key_events(),
-            SelectedComponent::Submit => self.submit_component.handle_key_events(),
             SelectedComponent::Response => self.response_component.handle_key_events(),
             SelectedComponent::History => self.history_component.handle_key_events(),
             SelectedComponent::Parameters => self.parameters_component.handle_key_events(),
@@ -98,15 +93,10 @@ impl<'a> App<'a> {
                 self.selected_component = SelectedComponent::Url;
             }
             Action::Window2Request => {
-                self.submit_component.handle_select();
-                self.selected_component = SelectedComponent::Submit
-
-            }
-            Action::Window3Request => {
                 self.parameters_component.handle_select();
                 self.selected_component = SelectedComponent::Parameters
             }
-            Action::Window4Request => {
+            Action::Window3Request => {
                 self.response_component.handle_select();
                 self.selected_component = SelectedComponent::Response
             }
@@ -127,16 +117,12 @@ impl<'a> App<'a> {
             Input { key: Key::Char('1'), .. } => {
                 self.url_component.handle_select();
                 self.selected_component = SelectedComponent::Url;
-            },
+            }
             Input { key: Key::Char('2'), .. } => {
-                self.submit_component.handle_select();
-                self.selected_component = SelectedComponent::Submit
-            },
-            Input { key: Key::Char('3'), .. } => {
                 self.parameters_component.handle_select();
                 self.selected_component = SelectedComponent::Parameters
             },
-            Input { key: Key::Char('4'), .. } => {
+            Input { key: Key::Char('3'), .. } => {
                 self.response_component.handle_select();
                 self.selected_component = SelectedComponent::Response
             }
@@ -159,12 +145,10 @@ impl<'a> App<'a> {
         let url_frame = Layout::new(
             Direction::Horizontal,
             [
-                Constraint::Percentage(95),
-                Constraint::Percentage(5),
+                Constraint::Percentage(100)
             ],
         ).split(main_layout[0]);
 
-        let _  = self.submit_component.render_frame(frame, url_frame[1]);
         let _  = self.parameters_component.render_frame(frame, main_layout[1]);
         let _  = self.response_component.render_frame(frame, main_layout[2]);
         let _  = self.url_component.render_frame(frame, url_frame[0]);

@@ -9,6 +9,5 @@ pub enum Action {
     Window1Request,
     Window2Request,
     Window3Request,
-    Window4Request,
     HistoryRequest,
 }
