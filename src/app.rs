@@ -142,16 +142,9 @@ impl<'a> App<'a> {
             ],
         ).split(frame.size());
 
-        let url_frame = Layout::new(
-            Direction::Horizontal,
-            [
-                Constraint::Percentage(100)
-            ],
-        ).split(main_layout[0]);
-
-        let _  = self.parameters_component.render_frame(frame, main_layout[1]);
         let _  = self.response_component.render_frame(frame, main_layout[2]);
-        let _  = self.url_component.render_frame(frame, url_frame[0]);
+        let _  = self.parameters_component.render_frame(frame, main_layout[1]);
+        let _  = self.url_component.render_frame(frame, main_layout[0]);
 
         if self.selected_component == SelectedComponent::History {
             let area = centered_rect(60, 25, frame.size());
