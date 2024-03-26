@@ -9,9 +9,20 @@
 <p>Alternative to Postman | inspired by lazygit</p>
 <br />
 
-![example image](https://github.com/Jorgexyx/LazyCurl/blob/main/example.png)
+<img width="1486" alt="Screenshot 2024-03-26 at 8 08 29 AM" src="https://github.com/Cypressxyx/lazycurl/assets/23204093/38d1efa8-e2ad-4b66-adf7-560a1cbb967a">
+
 <br/>
 
 ## Why
 
 Alternative to postman without all the  bloat
+
+## Installation
+```
+$ cargo run
+```
+
+## KeyBindings
+```
+h - select history window
+```
