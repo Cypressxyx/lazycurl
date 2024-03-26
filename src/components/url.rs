@@ -172,7 +172,7 @@ impl<'a> Component for Url<'a> {
 
         Tabs::new(http_method_lines)
             .block(Block::default().borders(Borders::ALL).title("URL (press E to edit, enter to submit)").border_style(border_style))
-            .highlight_style(Color::Yellow)
+            .highlight_style(Color::LightYellow)
             .select(self.http_method as usize)
             .divider("|")
             .render(area, frame.buffer_mut());
