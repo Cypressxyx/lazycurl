@@ -12,6 +12,7 @@ pub struct History {
     currently_selected_file: usize,
     lazycurl_files: Vec<LazyCurlFile>,
     scrollbar_state: ScrollbarState,
+    selected: bool,
 }
 
 impl History {
@@ -21,6 +22,7 @@ impl History {
             currently_selected_file: 0,
             lazycurl_files: Vec::new(),
             scrollbar_state: ScrollbarState::new(0),
+            selected: false
         }
     }
 
@@ -31,7 +33,7 @@ impl History {
 
     fn handle_load_request(&mut self) -> Option<Action> {
         if self.lazycurl_files.len() < 1 {
-            Some(Action::Suspend)
+            self.handle_deselect()
         } else {
             self.selected_file = Some(self.lazycurl_files.get(self.currently_selected_file).unwrap().clone());
             Some(Action::LazycurlFileLoadRequest)
@@ -90,11 +92,13 @@ impl Component for History {
     }
 
     fn handle_deselect(&mut self) -> Option<Action> {
+        self.selected = false;
         self.currently_selected_file = 0;
         Some(Action::Suspend)
     }
 
     fn handle_select(&mut self) {
+        self.selected = true;
         self.currently_selected_file = 0;
     }
 
@@ -107,6 +111,12 @@ impl Component for History {
             p = p.style(Style::default().bg(Color::Red));
             frame.render_widget(p, area);
             return Ok(())
+        }
+
+        let mut border_style = Style::default();
+
+        if self.selected {
+            border_style.fg = Some(Color::Green);
         }
 
         let paragraph = Paragraph::new(self.lazycurl_files
@@ -123,11 +133,10 @@ impl Component for History {
             .block(Block::default()
                 .borders(Borders::ALL)
                 .title("History")
-                .border_style(Style::default().fg(Color::Green)))
+                .border_style(border_style))
             .scroll((self.currently_selected_file as u16, 0));
 
         frame.render_widget(paragraph, area);
-
 
         frame.render_stateful_widget(
             Scrollbar::new(ScrollbarOrientation::VerticalRight)

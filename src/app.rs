@@ -7,7 +7,7 @@ use crate::{
         parameters::Parameters,
         response::Response,
         url::Url, Component
-    }, lazycurl_file::LazyCurlFile, tui, utils::{curl_service::curl_call, tui_frame_util::centered_rect}
+    }, lazycurl_file::LazyCurlFile, tui, utils::curl_service::curl_call
 };
 
 #[derive(PartialEq)]
@@ -133,6 +133,14 @@ impl<'a> App<'a> {
     }
 
     fn render_frame(&mut self, frame: &mut Frame) {
+        let app_layout = Layout::new(
+            Direction::Horizontal,
+            [
+                Constraint::Percentage(20),
+                Constraint::Percentage(80),
+            ]
+        ).split(frame.size());
+
         let main_layout = Layout::new(
             Direction::Vertical,
             [
@@ -140,16 +148,13 @@ impl<'a> App<'a> {
                 Constraint::Percentage(30),
                 Constraint::Percentage(60),
             ],
-        ).split(frame.size());
+        ).split(app_layout[1]);
 
         let _  = self.response_component.render_frame(frame, main_layout[2]);
         let _  = self.parameters_component.render_frame(frame, main_layout[1]);
         let _  = self.url_component.render_frame(frame, main_layout[0]);
 
-        if self.selected_component == SelectedComponent::History {
-            let area = centered_rect(60, 25, frame.size());
-            let _ = self.history_component.render_frame(frame, area);
-        }
+        let _ = self.history_component.render_frame(frame, app_layout[0]);
     }
 
     fn handle_curl_request(&mut self) {
