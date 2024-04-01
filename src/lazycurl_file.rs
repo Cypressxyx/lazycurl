@@ -3,17 +3,21 @@ use std::{fs::{self, File}, io::{Read, Write}, path::Path};
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
 
+use crate::http_method::HTTPMethod;
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct LazyCurlFile {
     pub url: String,
-    pub headers: Vec<String>
+    pub headers: Vec<String>,
+    pub http_method: HTTPMethod,
 }
 
 impl LazyCurlFile {
-    pub fn new(url: String, headers: Vec<String>) -> LazyCurlFile {
+    pub fn new(url: String, headers: Vec<String>, http_method: HTTPMethod) -> LazyCurlFile {
         Self {
             url,
-            headers
+            headers,
+            http_method
         }
     }
 

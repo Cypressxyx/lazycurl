@@ -8,6 +8,7 @@ use crate::{
         response::Response,
         url::Url, Component
     }, lazycurl_file::LazyCurlFile, tui, utils::curl_service::curl_call
+    }, http_method::HTTPMethod, lazycurl_file::LazyCurlFile, tui, utils::curl_service::curl_call
 };
 
 #[derive(PartialEq)]
@@ -55,6 +56,7 @@ impl<'a> App<'a> {
     pub fn handle_lazcurlfile_load_request(&mut self) {
         if let Some(selected_file) = self.history_component.take_selected_file() {
             self.url_component = Url::new_withurl(selected_file.url);
+            self.url_component = Url::new_withurl_and_httpmethod(selected_file.url, selected_file.http_method);
             self.parameters_component = Parameters::new_with_headers(selected_file.headers);
         }
         self.reset_selected_component()
@@ -172,12 +174,12 @@ impl<'a> App<'a> {
         curl_call(url.as_str(), &mut self.response, headers, self.parameters_component.get_body(), method);
         let response_string = String::from_utf8(self.response.clone()).unwrap();
         self.response_component.update_response_value(response_string.clone());
-        save_request(url.as_str(), component_headers)
+        save_request(url.as_str(), component_headers, method)
     }
 
 }
 
-fn save_request(url: &str, headers: Vec<String>) {
-    let _ = LazyCurlFile::new(String::from_str(url).unwrap(), headers).save();
+fn save_request(url: &str, headers: Vec<String>, http_method: HTTPMethod) {
+    let _ = LazyCurlFile::new(String::from_str(url).unwrap(), headers, http_method).save();
 }
 

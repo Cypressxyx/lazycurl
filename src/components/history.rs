@@ -3,7 +3,7 @@ use std::usize;
 use ratatui::{layout::Rect, style::{Color, Style}, symbols::scrollbar, text::Line, widgets::{Block, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState}};
 use tui_textarea::{Input, Key};
 
-use crate::{action::Action, lazycurl_file:: LazyCurlFile};
+use crate::{action::Action, http_method::HTTPMethod, lazycurl_file:: LazyCurlFile};
 
 use super::Component;
 
@@ -64,8 +64,10 @@ impl History {
     }
 
     pub fn get_lazycurl_files(&mut self) {
+        // this is used to create history dir but is bad, refactor out to own
+        // create histor method
         self.lazycurl_files = LazyCurlFile::new(
-            String::new(), Vec::<String>::new()
+            String::new(), Vec::<String>::new(), HTTPMethod::POST
         ).get_history_lazycurlfiles().unwrap();
 
         self.scrollbar_state = self.scrollbar_state.content_length(self.lazycurl_files.len())

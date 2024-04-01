@@ -1,7 +1,8 @@
 use ratatui::text::Line;
+use serde::{Serialize, Deserialize};
 use strum::{Display, EnumIter, FromRepr};
 
-#[derive(Display, FromRepr, Clone, Copy, EnumIter)]
+#[derive(Display, FromRepr, Clone, Copy, EnumIter, Deserialize, Serialize)]
 pub enum HTTPMethod {
     POST,
     GET,

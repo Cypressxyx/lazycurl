@@ -41,7 +41,7 @@ impl<'a> Url<'a> {
         }
     }
 
-    pub fn new_withurl(url: String) -> Self {
+    pub fn new_withurl_and_httpmethod(url: String, http_method: HTTPMethod) -> Self {
         let mut text_area = TextArea::default();
         text_area.set_block(
         Block::default()
@@ -52,8 +52,8 @@ impl<'a> Url<'a> {
         Self {
             url_text_area: text_area,
             edit_mode: false,
-            http_method: HTTPMethod::POST,
             selected: false,
+            http_method,
         }
     }
 
