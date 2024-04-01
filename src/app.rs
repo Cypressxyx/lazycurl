@@ -7,8 +7,8 @@ use crate::{
         parameters::Parameters,
         response::Response,
         url::Url, Component
-    }, lazycurl_file::LazyCurlFile, tui, utils::curl_service::curl_call
-    }, http_method::HTTPMethod, lazycurl_file::LazyCurlFile, tui, utils::curl_service::curl_call
+    },
+    lazycurl_file::LazyCurlFile, tui, utils::curl_service::curl_call,http_method::HTTPMethod
 };
 
 #[derive(PartialEq)]
@@ -55,7 +55,6 @@ impl<'a> App<'a> {
 
     pub fn handle_lazcurlfile_load_request(&mut self) {
         if let Some(selected_file) = self.history_component.take_selected_file() {
-            self.url_component = Url::new_withurl(selected_file.url);
             self.url_component = Url::new_withurl_and_httpmethod(selected_file.url, selected_file.http_method);
             self.parameters_component = Parameters::new_with_headers(selected_file.headers);
         }
