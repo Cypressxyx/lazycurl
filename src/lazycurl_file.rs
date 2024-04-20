@@ -3,7 +3,7 @@ use std::{fs::{self, File}, io::{Read, Write}, path::Path};
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
 
-use crate::{http_method::HTTPMethod, utils::directory::init_history_directory_if_not_exist};
+use crate::{http_method::HTTPMethod, utils::directory::{init_history_directory_if_not_exist, Directory}};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct LazyCurlFile {
@@ -27,7 +27,7 @@ impl LazyCurlFile {
         let serialized = serde_json::to_string_pretty(&self)?;
         let now = Utc::now();
         let timestamp = now.format("%Y-%m-%dT%H-%M-%SZ").to_string();
-        let filename = format!("history/lazy_curl_request_{}.json", timestamp);
+        let filename = format!("{}/lazy_curl_request_{}.json", Directory::History.path(), timestamp);
 
         let mut file = File::create(filename)?;
         file.write_all(serialized.as_bytes())?;

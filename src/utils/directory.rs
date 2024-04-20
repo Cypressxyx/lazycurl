@@ -6,7 +6,7 @@ pub enum Directory {
 }
 
 impl Directory {
-    fn path(&self) -> String {
+    pub fn path(&self) -> String {
         match self {
             Directory::Root => ".".to_string(),
             Directory::History => {
