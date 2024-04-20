@@ -3,7 +3,7 @@ use std::{fs::{self, File}, io::{Read, Write}, path::Path};
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
 
-use crate::{http_method::HTTPMethod, utils::directory::{init_history_directory_if_not_exist, Directory}};
+use crate::{http_method::HTTPMethod, utils::directory::{init_collection_directory_if_not_exist, init_history_directory_if_not_exist, Directory}};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct LazyCurlFile {
@@ -52,6 +52,12 @@ impl LazyCurlFile {
             }
         }
 
+        Ok(lazy_curl_files)
+    }
+
+    pub fn get_collection_lazycarul_files(&mut self) ->  Result<Vec<LazyCurlFile>, Box<dyn std::error::Error>> {
+        let mut lazy_curl_files: Vec<LazyCurlFile> = Vec::new();
+        let dir_path = init_collection_directory_if_not_exist();
         Ok(lazy_curl_files)
     }
 }
