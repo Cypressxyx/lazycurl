@@ -265,6 +265,7 @@ dependencies = [
  "strum",
  "strum_macros",
  "tui-textarea",
+ "tui-tree-widget",
 ]
 
 [[package]]
@@ -608,6 +609,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3e38ced1f941a9cfc923fbf2fe6858443c42cc5220bfd35bdd3648371e7bd8e"
 dependencies = [
  "crossterm",
+ "ratatui",
+ "unicode-width",
+]
+
+[[package]]
+name = "tui-tree-widget"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb0c6f924587e719c50b8f83485afbe4d4c16edca6b641d5d9a3204edeba5cf0"
+dependencies = [
  "ratatui",
  "unicode-width",
 ]
