@@ -3,7 +3,7 @@ use std::{fs::{self, File}, io::{Read, Write}, path::Path};
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
 
-use crate::http_method::HTTPMethod;
+use crate::{http_method::HTTPMethod, utils::directory::init_history_directory_if_not_exist};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct LazyCurlFile {
@@ -22,9 +22,7 @@ impl LazyCurlFile {
     }
 
     pub fn save(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-       // Ensure the "history" directory exists
-        let dir_path = Path::new("history");
-        fs::create_dir_all(dir_path)?;
+        init_history_directory_if_not_exist();
 
         let serialized = serde_json::to_string_pretty(&self)?;
         let now = Utc::now();
@@ -38,9 +36,7 @@ impl LazyCurlFile {
 
     pub fn get_history_lazycurlfiles(&mut self) -> Result<Vec<LazyCurlFile>, Box<dyn std::error::Error>> {
         let mut lazy_curl_files: Vec<LazyCurlFile> = Vec::new();
-       // Ensure the "history" directory exists
-        let dir_path = Path::new("history");
-        fs::create_dir_all(dir_path)?;
+        let dir_path = init_history_directory_if_not_exist();
 
         for entry in fs::read_dir(dir_path)? {
             let entry = entry?;
