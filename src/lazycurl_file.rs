@@ -1,9 +1,10 @@
-use std::{fs::{self, File}, io::{Read, Write}, path::Path};
+use std::{fs::{self, File}, io::{Read, Write}, path::{Path, PathBuf}};
 
 use chrono::Utc;
 use serde::{Serialize, Deserialize};
 
 use crate::{http_method::HTTPMethod, utils::directory::{init_collection_directory_if_not_exist, init_history_directory_if_not_exist, Directory}};
+use tui_tree_widget::TreeItem;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct LazyCurlFile {
@@ -37,7 +38,6 @@ impl LazyCurlFile {
     pub fn get_history_lazycurlfiles(&mut self) -> Result<Vec<LazyCurlFile>, Box<dyn std::error::Error>> {
         let mut lazy_curl_files: Vec<LazyCurlFile> = Vec::new();
         let dir_path = init_history_directory_if_not_exist();
-
         for entry in fs::read_dir(dir_path)? {
             let entry = entry?;
             let path = entry.path();
@@ -51,13 +51,28 @@ impl LazyCurlFile {
                 lazy_curl_files.push(lazy_curl_file);
             }
         }
-
         Ok(lazy_curl_files)
     }
 
-    pub fn get_collection_lazycarul_files(&mut self) ->  Result<Vec<LazyCurlFile>, Box<dyn std::error::Error>> {
-        let mut lazy_curl_files: Vec<LazyCurlFile> = Vec::new();
-        let dir_path = init_collection_directory_if_not_exist();
-        Ok(lazy_curl_files)
+    pub fn get_collection_lazycurl_files<'a>(&mut self, root_directory: PathBuf) -> Result<Vec<TreeItem<'a,  String>>, Box<dyn std::error::Error>> {
+        let mut collection_tree = Vec::new();
+        //let dir_path = init_collection_directory_if_not_exist();
+        for entry in fs::read_dir(root_directory)? {
+            let path = entry?.path();
+            if path.is_file() {
+                let file_name = self.get_file_name(&path);
+                //let file_name = path.file_name().unwrap().to_str().unwrap().to_owned();
+                collection_tree.push(TreeItem::new_leaf(String::from(&file_name), String::from(&file_name)));
+            } else if path.is_dir() {
+                let data = self.get_collection_lazycurl_files(path).unwrap();
+                data.iter().for_each(|v| collection_tree.push(v.clone()));
+            }
+        }
+
+        Ok(collection_tree)
+    }
+
+    fn get_file_name(&mut self, path: &PathBuf) -> String {
+        String::from(path.file_name().unwrap().to_str().unwrap())
     }
 }
