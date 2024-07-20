@@ -42,7 +42,7 @@ Enter - send request
 
 ```
 e - edit URL
-Enter - submit URL
+Esc - submit URL
 [ - POST
 ] - GET
 ```
