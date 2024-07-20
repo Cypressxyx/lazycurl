@@ -3,7 +3,7 @@ use std::usize;
 use ratatui::{layout::Rect, style::{Color, Style}, symbols::scrollbar, text::Line, widgets::{Block, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState}};
 use tui_textarea::{Input, Key};
 
-use crate::{action::Action, http_method::HTTPMethod, lazycurl_file:: LazyCurlFile};
+use crate::{action::Action, http_method::HTTPMethod, lazycurl_file:: LazyCurlFile, utils::tui_block::main_block};
 
 use super::Component;
 
@@ -115,11 +115,7 @@ impl Component for History {
             return Ok(())
         }
 
-        let mut border_style = Style::default();
-
-        if self.selected {
-            border_style.fg = Some(Color::Green);
-        }
+        let block = main_block(&self.selected, "History");
 
         let paragraph = Paragraph::new(self.lazycurl_files
                 .iter()
@@ -132,10 +128,7 @@ impl Component for History {
                         }
                 })
                 .collect::<Vec<_>>())
-            .block(Block::default()
-                .borders(Borders::ALL)
-                .title("History")
-                .border_style(border_style))
+            .block(block)
             .scroll((self.currently_selected_file as u16, 0));
 
         frame.render_widget(paragraph, area);
