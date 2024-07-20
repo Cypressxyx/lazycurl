@@ -66,7 +66,14 @@ impl<'a> Headers<'a> {
         self.headers.get_mut(self.selected_header_index).unwrap().handle_selected();
         self.is_in_edit_mode = true;
         None
+    }
 
+    fn handle_delete_header(&mut self) -> Option<Action> {
+        if self.headers.is_empty() {
+            return None
+        }
+        self.headers.remove(self.selected_header_index);
+        None
     }
 
     fn handle_headers_key_events(&mut self) -> Option<Action> {
@@ -79,6 +86,7 @@ impl<'a> Headers<'a> {
                     Input { key: Key::Char('k'), .. } => self.handle_traverse_up_request(),
                     Input { key: Key::Char('e'), .. } => self.handle_edit_header(),
                     Input { key: Key::Char('a'), .. } => self.handle_add_header(),
+                    Input { key: Key::Char('d'), .. } => self.handle_delete_header(),
                     Input { key: Key::Char('['), .. } => Some(Action::TabLeft),
                     Input { key: Key::Char(']'), .. } => Some(Action::TabRight),
                     Input { key: Key::Char('h'), .. } => {
