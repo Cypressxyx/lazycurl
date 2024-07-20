@@ -165,7 +165,7 @@ impl<'a> Component for Url<'a> {
 
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
         let http_method_lines = HTTPMethod::iter().map(HTTPMethod::line);
-        let block = main_block(&self.selected, "URL (press E to edit, enter to submit");
+        let block = main_block(&self.selected, "[1]—URL—(press E to edit, enter to submit)");
 
         Tabs::new(http_method_lines)
             .block(block)

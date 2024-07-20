@@ -68,21 +68,11 @@ impl Component for Response {
     }
 
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
-        let block = main_block(&self.selected, "Response");
+        let block = main_block(&self.selected, "[3]-Response");
         let p = Paragraph::new(self.response_value.as_str())
                     .block(block);
         frame.render_widget(p, area);
 
-        if self.selected {
-            let p = Paragraph::new(self.response_value.as_str())
-                        .block(Block::default().title("Response").borders(Borders::ALL).style(Style::default().fg(Color::Green)));
-            frame.render_widget(p, area);
-
-        } else {
-            let p = Paragraph::new(self.response_value.as_str())
-                        .block(Block::default().title("Response").borders(Borders::ALL));
-            frame.render_widget(p, area);
-        }
         Ok(())
     }
 }

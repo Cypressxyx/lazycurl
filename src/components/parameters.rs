@@ -120,7 +120,7 @@ impl<'a> Component for Parameters<'a> {
 
         let tab_titles = SelectedTab::iter().map(SelectedTab::title);
 
-        let block = main_block(&self.selected, "Parameters");
+        let block = main_block(&self.selected, "[2]-Parameters");
 
         Tabs::new(tab_titles)
             .block(block)
