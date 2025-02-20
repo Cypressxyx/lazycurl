@@ -125,10 +125,11 @@ impl Component for History {
                 .iter()
                 .enumerate()
                 .map(|(index, f)| {
+                        let request_info = format!("{} {}", f.http_method, f.url);
                         if index == self.currently_selected_file {
-                            Line::from(f.url.clone()).style(Style::default().bg(Color::Blue))
+                            Line::from(request_info).style(Style::default().bg(Color::Blue))
                         } else {
-                            Line::from(f.url.clone())
+                            Line::from(request_info)
                         }
                 })
                 .collect::<Vec<_>>())
