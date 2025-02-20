@@ -23,6 +23,54 @@ $ cargo run
 ```
 
 ## KeyBindings
+
+### Body
+
 ```
+q - quit
+Esc - deselect
 h - select history window
+
+1 - focus URL window
+2 - focus Parameters window
+3 - focus Response window
+
+Enter - send request
+```
+
+### URL Window (1)
+
+```
+e - edit URL
+Esc - submit URL
+[ - POST
+] - GET
+```
+
+### Parameters Window (2)
+
+```
+[ - Headers
+] - Body
+
+    # Headers
+    j - traverse down request
+    k - traverse up request
+    e - edit mode
+    a - add new header
+    TAB - switch between key and value (edit mode)
+
+    # Body
+    e - edit mode
+
+```
+### Response Window (3)
+
+    `...`
+
+### History Window
+```
+    j - traverse down request
+    k - traverse up request
+    Space, l, Enter - send request
 ```
