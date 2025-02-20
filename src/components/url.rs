@@ -1,5 +1,6 @@
 use crate::action::Action;
 use crate::http_method::HTTPMethod;
+use crate::utils::tui_block::main_block;
 use crate::utils::tui_frame_util::centered_rect;
 
 use super::Component;
@@ -146,7 +147,7 @@ impl<'a> Component for Url<'a> {
                         self.handle_deselect();
                         Some(Action::Window3Request)
                     },
-                    _ => None 
+                    _ => None
                 }
             }
             Err(_) => Some(Action::Suspend)
@@ -164,14 +165,10 @@ impl<'a> Component for Url<'a> {
 
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
         let http_method_lines = HTTPMethod::iter().map(HTTPMethod::line);
-        let mut border_style = Style::default();
-
-        if self.selected {
-            border_style.fg = Some(Color::Green);
-        }
+        let block = main_block(&self.selected, "[1]—URL—(press E to edit, enter to submit)");
 
         Tabs::new(http_method_lines)
-            .block(Block::default().borders(Borders::ALL).title("URL (press E to edit, enter to submit)").border_style(border_style))
+            .block(block)
             .highlight_style(Color::LightYellow)
             .select(self.http_method as usize)
             .divider("|")

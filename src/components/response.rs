@@ -2,7 +2,7 @@ use ratatui::{layout::Rect, style::{Color, Style}, widgets::{Block, Borders, Par
 use serde_json::Value;
 use tui_textarea::{Input, Key};
 
-use crate::action::Action;
+use crate::{action::Action, utils::tui_block::main_block};
 
 use super::Component;
 
@@ -68,16 +68,11 @@ impl Component for Response {
     }
 
     fn render_frame(&mut self, frame: &mut ratatui::prelude::Frame<'_>, area: Rect) -> std::io::Result<()> {
-        if self.selected {
-            let p = Paragraph::new(self.response_value.as_str())
-                        .block(Block::default().title("Response").borders(Borders::ALL).style(Style::default().fg(Color::Green)));
-            frame.render_widget(p, area);
+        let block = main_block(&self.selected, "[3]-Response");
+        let p = Paragraph::new(self.response_value.as_str())
+                    .block(block);
+        frame.render_widget(p, area);
 
-        } else {
-            let p = Paragraph::new(self.response_value.as_str())
-                        .block(Block::default().title("Response").borders(Borders::ALL));
-            frame.render_widget(p, area);
-        }
         Ok(())
     }
 }

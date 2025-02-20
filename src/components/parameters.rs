@@ -3,7 +3,7 @@ use std::usize;
 use ratatui::{layout::{Constraint, Direction, Layout, Rect}, style::{Color, Style}, text::Line, widgets::{Block, Borders, Tabs, Widget}};
 use strum::{Display, EnumIter, FromRepr, IntoEnumIterator};
 
-use crate::action::Action;
+use crate::{action::Action, utils::tui_block::main_block};
 
 use super::{body::Body, headers::Headers, Component};
 
@@ -120,14 +120,10 @@ impl<'a> Component for Parameters<'a> {
 
         let tab_titles = SelectedTab::iter().map(SelectedTab::title);
 
-        let mut border_style = Style::default();
-
-        if self.selected {
-            border_style.fg = Some(Color::Green);
-        }
+        let block = main_block(&self.selected, "[2]-Parameters");
 
         Tabs::new(tab_titles)
-            .block(Block::default().borders(Borders::ALL).title("Parameters").border_style(border_style))
+            .block(block)
             .highlight_style(Color::Yellow)
             .select(self.selected_tab as usize)
             .divider("|")
