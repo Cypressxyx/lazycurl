@@ -59,6 +59,9 @@ impl<'a> Headers<'a> {
 
     fn handle_add_header(&mut self) -> Option<Action> {
         self.headers.push(Header::new());
+        // Select the newly added header and enter edit mode
+        self.selected_header_index = self.headers.len() - 1;
+        self.handle_edit_header();
         None
     }
 
